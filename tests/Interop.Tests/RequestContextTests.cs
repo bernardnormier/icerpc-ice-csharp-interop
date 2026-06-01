@@ -13,7 +13,7 @@ namespace Interop.Tests;
 [Parallelizable(scope: ParallelScope.All)]
 internal partial class RequestContextTests
 {
-    private static IEnumerable<IDictionary<string, string>> RequestContextSource
+    private static IEnumerable<IReadOnlyDictionary<string, string>> RequestContextSource
     {
         get
         {
@@ -29,7 +29,7 @@ internal partial class RequestContextTests
 
     /// <summary>Sends a request with a request context from Ice to IceRPC.</summary>
     [TestCaseSource(nameof(RequestContextSource))]
-    public async Task Send_request_with_context_from_Ice_to_IceRpc(IDictionary<string, string> context)
+    public async Task Send_request_with_context_from_Ice_to_IceRpc(IReadOnlyDictionary<string, string> context)
     {
         // Arrange
         var chatbot = new ChatbotTwin();
@@ -48,7 +48,7 @@ internal partial class RequestContextTests
 
     /// <summary>Sends a request with a request context from IceRPC to Ice.</summary>
     [TestCaseSource(nameof(RequestContextSource))]
-    public async Task Send_request_with_context_from_IceRpc_to_Ice(IDictionary<string, string> context)
+    public async Task Send_request_with_context_from_IceRpc_to_Ice(IReadOnlyDictionary<string, string> context)
     {
         // Arrange
         var chatbot = new Chatbot();
@@ -72,12 +72,12 @@ internal partial class RequestContextTests
 
     private class Chatbot : GreeterDisp_
     {
-        public IDictionary<string, string> RequestContext { get; private set; } =
+        public IReadOnlyDictionary<string, string> RequestContext { get; private set; } =
             ImmutableDictionary<string, string>.Empty;
 
         public override string greet(string name, Current? current)
         {
-            RequestContext = current?.ctx as IDictionary<string, string> ?? ImmutableDictionary<string, string>.Empty;
+            RequestContext = current?.ctx as IReadOnlyDictionary<string, string> ?? ImmutableDictionary<string, string>.Empty;
             return $"Hello, {name}!";
         }
     }
@@ -85,7 +85,7 @@ internal partial class RequestContextTests
     [Service]
     private partial class ChatbotTwin : IGreeterService
     {
-        public IDictionary<string, string> RequestContext { get; private set; } =
+        public IReadOnlyDictionary<string, string> RequestContext { get; private set; } =
             ImmutableDictionary<string, string>.Empty;
 
         public ValueTask<string> GreetAsync(
